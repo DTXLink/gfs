@@ -1,2 +1,2 @@
-# gofs
+# gfs
 file system ssdb
