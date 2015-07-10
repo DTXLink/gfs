@@ -1,4 +1,4 @@
-package gfs
+package main
 
 import (
 	"crypto/md5"

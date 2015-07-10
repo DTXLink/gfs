@@ -1,18 +1,16 @@
-package gfs
+package main
 
 import (
-	_ "fmt"
+	//"fmt"
 	"github.com/ssdb/gossdb/ssdb"
 	"os"
 )
 
-type ZSSDBStorage struct {
-	context *ZContext
-	db      *ssdb.Client
+type zstore struct {
+	db *ssdb.Client
 }
 
-func NewSSDBStorage(c *ZContext) *ZSSDBStorage {
-	z := new(ZSSDBStorage)
+func (z *zstore) getConnect() {
 	ip := "192.168.82.2"
 	port := 8888
 	db, err := ssdb.Connect(ip, port)
@@ -20,26 +18,33 @@ func NewSSDBStorage(c *ZContext) *ZSSDBStorage {
 		os.Exit(1)
 	}
 	z.db = db
-	z.context = c
-	return z
 }
 
-func (z *ZSSDBStorage) get_file(key string) (interface{}, error) {
+func save_file(key string, val []byte) error {
 
-	var val interface{}
-	var err error
-	val, err = z.db.Get(key)
+	ip := "192.168.82.2"
+	port := 8888
+	db, err := ssdb.Connect(ip, port)
+	if err != nil {
+		return err
+	}
 
+	db.Do("set", key, val)
+
+	return nil
+}
+
+func get_file(key string) (interface{}, error) {
+
+	ip := "192.168.82.2"
+	port := 8888
+	db, err := ssdb.Connect(ip, port)
 	if err != nil {
 		return nil, err
 	}
 
+	var val interface{}
+	val, err = db.Get(key)
+
 	return val, err
-}
-
-func (z *ZSSDBStorage) save_file(key string, val []byte) error {
-
-	z.db.Do("set", key, val)
-
-	return nil
 }
