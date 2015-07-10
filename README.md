@@ -3,7 +3,7 @@ file system ssdb
 
 # install
 
-go build
+go build gfs
 
 
 ./gfs
