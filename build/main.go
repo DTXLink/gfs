@@ -3,7 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 	//log "github.com/golang/glog"
+	gfs "github.com/DTXLink/gfs"
 )
 
 func main() {
@@ -15,7 +17,12 @@ func main() {
 	//b64 := encode_base64("heell")
 	//fmt.Println(b64)
 
-	StartHTTP() // start http listen.
+	zContext, err := gfs.NewContext()
 
-	//log.Infoln("helll")
+	if err != nil {
+		panic(err)
+		os.Exit(-2)
+	}
+
+	gfs.StartHTTP(zContext)
 }
