@@ -13,7 +13,7 @@ import (
 	"io/ioutil"
 )
 
-func (z *ZContext) server(w http.ResponseWriter, r *http.Request) {
+func (z *Context) server(w http.ResponseWriter, r *http.Request) {
 	//params := r.URL.Query()
 	//key := params.Get("k")
 	//callback := params.Get("cb")
@@ -58,7 +58,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, html)
 }
 
-func (z *ZContext) upload(w http.ResponseWriter, r *http.Request) {
+func (z *Context) upload(w http.ResponseWriter, r *http.Request) {
 	//	if err := r.ParseMultipartForm(CACHE_MAX_SIZE); err != nil {
 	//		//z.context.Logger.Error(err.Error())
 	//		//z.doError(err, http.StatusForbidden)
@@ -88,7 +88,7 @@ func (z *ZContext) upload(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf("%s", md5key)))
 }
 
-func (z *ZContext) download(w http.ResponseWriter, r *http.Request, key string) {
+func (z *Context) download(w http.ResponseWriter, r *http.Request, key string) {
 	val, err := z.storage.get_file(key)
 	if err != nil {
 		fmt.Fprint(w, "the file not exits!")

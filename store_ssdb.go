@@ -6,32 +6,30 @@ import (
 	"os"
 )
 
-type ZSSDBStorage struct {
-	context *ZContext
-	db      *ssdb.Client
+type SSDBStorage struct {
+	db *ssdb.Client
 }
 
-func NewSSDBStorage(c *ZContext) *ZSSDBStorage {
-	z := new(ZSSDBStorage)
-	ip := "192.168.82.2"
-	port := 8888
+func NewSSDBStorage(c *Context) *SSDBStorage {
+	z := new(SSDBStorage)
+	ip := c.cfg.Storage.SSDBHost
+	port := c.cfg.Storage.SSDBPort
 	db, err := ssdb.Connect(ip, port)
 	if err != nil {
 		os.Exit(1)
 	}
 	z.db = db
-	z.context = c
 	return z
 }
 
-func (z *ZSSDBStorage) save_file(key string, val []byte) error {
+func (z *SSDBStorage) save_file(key string, val []byte) error {
 
 	z.db.Do("set", key, val)
 
 	return nil
 }
 
-func (z *ZSSDBStorage) get_file(key string) (interface{}, error) {
+func (z *SSDBStorage) get_file(key string) (interface{}, error) {
 
 	var val interface{}
 	var err error

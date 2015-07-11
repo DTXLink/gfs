@@ -4,25 +4,55 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime"
 	//log "github.com/golang/glog"
 	gfs "github.com/DTXLink/gfs"
 )
 
 func main() {
-	//var err error
+	runtime.GOMAXPROCS(runtime.NumCPU())
+
+	configPtr := flag.String("config", "", "config file")
+	flag.Usage = usage
 	flag.Parse()
 
-	fmt.Println("web start.")
+	if *configPtr == "" {
+		*configPtr = "./conf/config.conf"
+	}
 
-	//b64 := encode_base64("heell")
-	//fmt.Println(b64)
+	cfgFile := *configPtr
+	isExist, _ := exists(cfgFile)
+	if !isExist {
+		fmt.Println("config file not exist!")
+		os.Exit(-1)
+	}
 
-	zContext, err := gfs.NewContext()
+	context, err := gfs.NewContext(cfgFile)
 
 	if err != nil {
 		panic(err)
 		os.Exit(-2)
 	}
 
-	gfs.StartHTTP(zContext)
+	fmt.Println("web start..")
+
+	gfs.StartHTTP(context)
+}
+
+// exists returns whether the given file or directory exists or not
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
+func usage() {
+	fmt.Fprintf(os.Stderr, "Usage:--config=/etc/config.ini \n")
+	flag.PrintDefaults()
+	os.Exit(-2)
 }

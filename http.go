@@ -9,17 +9,25 @@ import (
 	//"time"
 )
 
-type ZContext struct {
-	storage *ZSSDBStorage
+type Context struct {
+	cfg     *Config
+	storage *SSDBStorage
 }
 
-func NewContext() (*ZContext, error) {
-	c := new(ZContext)
+func NewContext(cfgFile string) (*Context, error) {
+
+	cfg, err := LoadConfig(cfgFile)
+	if err != nil {
+		return nil, err
+	}
+
+	c := new(Context)
+	c.cfg = &cfg
 	c.storage = NewSSDBStorage(c)
 	return c, nil
 }
 
-func StartHTTP(z *ZContext) {
+func StartHTTP(z *Context) {
 
 	http.HandleFunc("/", z.server)
 	http.HandleFunc("/upload", z.upload)
