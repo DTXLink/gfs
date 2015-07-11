@@ -18,15 +18,15 @@ func NewSSDBStorage(cfg *Config) *SSDBStorage {
 	return &SSDBStorage{client: c}
 }
 
-func (storage *SSDBStorage) set(key string, val []byte) error {
-	storage.client.Do("set", key, val)
+func (this *SSDBStorage) set(key string, val []byte) error {
+	this.client.Do("set", key, val)
 	return nil
 }
 
-func (storage *SSDBStorage) get(key string) (interface{}, error) {
+func (this *SSDBStorage) get(key string) (interface{}, error) {
 	var val interface{}
 	var err error
-	val, err = storage.client.Get(key)
+	val, err = this.client.Get(key)
 	if err != nil {
 		return nil, err
 	}
