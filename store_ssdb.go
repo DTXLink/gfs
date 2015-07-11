@@ -7,30 +7,26 @@ import (
 )
 
 type SSDBStorage struct {
-	db *ssdb.Client
+	client *ssdb.Client
 }
 
-func NewSSDBStorage(ctx *Context) *SSDBStorage {
-	client := new(SSDBStorage)
-	ip := ctx.cfg.Storage.SSDBHost
-	port := ctx.cfg.Storage.SSDBPort
-	db, err := ssdb.Connect(ip, port)
+func NewSSDBStorage(cfg *Config) *SSDBStorage {
+	c, err := ssdb.Connect(cfg.Storage.SSDBHost, cfg.Storage.SSDBPort)
 	if err != nil {
 		os.Exit(1)
 	}
-	client.db = db
-	return client
+	return &SSDBStorage{client: c}
 }
 
-func (client *SSDBStorage) save_file(key string, val []byte) error {
-	client.db.Do("set", key, val)
+func (storage *SSDBStorage) set(key string, val []byte) error {
+	storage.client.Do("set", key, val)
 	return nil
 }
 
-func (client *SSDBStorage) get_file(key string) (interface{}, error) {
+func (storage *SSDBStorage) get(key string) (interface{}, error) {
 	var val interface{}
 	var err error
-	val, err = client.db.Get(key)
+	val, err = storage.client.Get(key)
 	if err != nil {
 		return nil, err
 	}

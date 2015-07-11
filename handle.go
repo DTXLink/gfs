@@ -19,7 +19,7 @@ func (ctx *Context) server(w http.ResponseWriter, r *http.Request) {
 		md5key := path[1:len(path)]
 		fmt.Println("md5key:" + md5key)
 
-		val, err := ctx.storage.get_file(md5key)
+		val, err := ctx.storage.get(md5key)
 		if err != nil {
 			fmt.Fprint(w, "the file not exits!")
 		}
@@ -80,7 +80,7 @@ func (ctx *Context) upload(w http.ResponseWriter, r *http.Request) {
 
 	md5key := fmt.Sprintf("%s%s", gen_md5_str(data), ext)
 
-	ctx.storage.save_file(md5key, data)
+	ctx.storage.set(md5key, data)
 	if err != nil {
 		//fmt.Println("upload file fail:" md5key)
 		fmt.Println(err)
@@ -90,7 +90,7 @@ func (ctx *Context) upload(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctx *Context) download(w http.ResponseWriter, r *http.Request, key string) {
-	val, err := ctx.storage.get_file(key)
+	val, err := ctx.storage.get(key)
 	if err != nil {
 		fmt.Fprint(w, "the file not exits!")
 	}
