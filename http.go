@@ -3,7 +3,7 @@ package gfs
 import (
 	//log "code.google.com/p/log4go"
 	//"encoding/json"
-	//"fmt"
+	"fmt"
 	//"net"
 	"net/http"
 	//"time"
@@ -27,10 +27,11 @@ func NewContext(cfgFile string) (*Context, error) {
 	return c, nil
 }
 
-func StartHTTP(z *Context) {
+func StartHTTP(ctx *Context) {
 
-	http.HandleFunc("/", z.server)
-	http.HandleFunc("/upload", z.upload)
+	http.HandleFunc("/", ctx.server)
+	http.HandleFunc("/upload", ctx.upload)
 
-	http.ListenAndServe(":3000", nil)
+	addr := fmt.Sprintf("%s:%d", ctx.cfg.System.Host, ctx.cfg.System.Port)
+	http.ListenAndServe(addr, nil)
 }

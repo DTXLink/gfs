@@ -10,10 +10,10 @@ type SSDBStorage struct {
 	db *ssdb.Client
 }
 
-func NewSSDBStorage(c *Context) *SSDBStorage {
+func NewSSDBStorage(ctx *Context) *SSDBStorage {
 	z := new(SSDBStorage)
-	ip := c.cfg.Storage.SSDBHost
-	port := c.cfg.Storage.SSDBPort
+	ip := ctx.cfg.Storage.SSDBHost
+	port := ctx.cfg.Storage.SSDBPort
 	db, err := ssdb.Connect(ip, port)
 	if err != nil {
 		os.Exit(1)

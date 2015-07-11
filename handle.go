@@ -13,7 +13,7 @@ import (
 	"io/ioutil"
 )
 
-func (z *Context) server(w http.ResponseWriter, r *http.Request) {
+func (ctx *Context) server(w http.ResponseWriter, r *http.Request) {
 	//params := r.URL.Query()
 	//key := params.Get("k")
 	//callback := params.Get("cb")
@@ -25,13 +25,13 @@ func (z *Context) server(w http.ResponseWriter, r *http.Request) {
 		md5key := path[1:len(path)]
 		fmt.Println("md5key:" + md5key)
 
-		val, err := z.storage.get_file(md5key)
+		val, err := ctx.storage.get_file(md5key)
 		if err != nil {
 			fmt.Fprint(w, "the file not exits!")
 		}
 
 		fmt.Fprint(w, val)
-		z.download(w, r, md5key)
+		ctx.download(w, r, md5key)
 	}
 }
 
@@ -58,29 +58,29 @@ func home(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, html)
 }
 
-func (z *Context) upload(w http.ResponseWriter, r *http.Request) {
+func (ctx *Context) upload(w http.ResponseWriter, r *http.Request) {
 	//	if err := r.ParseMultipartForm(CACHE_MAX_SIZE); err != nil {
-	//		//z.context.Logger.Error(err.Error())
-	//		//z.doError(err, http.StatusForbidden)
+	//		//ctx.context.Logger.Error(err.Error())
+	//		//ctx.doError(err, http.StatusForbidden)
 	//		return
 	//	}
 
 	file, _, err := r.FormFile("upload_file")
 	if err != nil {
-		//z.doError(err, 500)
+		//ctx.doError(err, 500)
 		return
 	}
 	defer file.Close()
 
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
-		//z.doError(err, 500)
+		//ctx.doError(err, 500)
 		return
 	}
 
 	md5key := fmt.Sprintf("%s", gen_md5_str(data))
 
-	z.storage.save_file(md5key, data)
+	ctx.storage.save_file(md5key, data)
 	if err != nil {
 		//fmt.Println("upload file fail:" md5key)
 		return
@@ -88,8 +88,8 @@ func (z *Context) upload(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(fmt.Sprintf("%s", md5key)))
 }
 
-func (z *Context) download(w http.ResponseWriter, r *http.Request, key string) {
-	val, err := z.storage.get_file(key)
+func (ctx *Context) download(w http.ResponseWriter, r *http.Request, key string) {
+	val, err := ctx.storage.get_file(key)
 	if err != nil {
 		fmt.Fprint(w, "the file not exits!")
 	}
