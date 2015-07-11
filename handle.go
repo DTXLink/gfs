@@ -1,16 +1,10 @@
 package gfs
 
 import (
-	"net/http"
-	//"strconv"
-	//"time"
 	"fmt"
-	//log "code.google.com/p/log4go"
-	//myrpc "github.com/Terry-Mao/gopush-cluster/rpc"
-	//"strconv"
-	//"time"
-	//"github.com/DTXLink/gfs/store"
 	"io/ioutil"
+	"net/http"
+	"path"
 )
 
 func (ctx *Context) server(w http.ResponseWriter, r *http.Request) {
@@ -65,24 +59,31 @@ func (ctx *Context) upload(w http.ResponseWriter, r *http.Request) {
 	//		return
 	//	}
 
-	file, _, err := r.FormFile("upload_file")
+	file, handle, err := r.FormFile("upload_file")
 	if err != nil {
 		//ctx.doError(err, 500)
+		fmt.Println(err)
 		return
 	}
 	defer file.Close()
 
+	//fmt.Println("upload file:%s", handle.Filename)
+	//fmt.Println("ext" + path.Ext(handle.Filename))
+	ext := path.Ext(handle.Filename)
+
 	data, err := ioutil.ReadAll(file)
 	if err != nil {
 		//ctx.doError(err, 500)
+		fmt.Println(err)
 		return
 	}
 
-	md5key := fmt.Sprintf("%s", gen_md5_str(data))
+	md5key := fmt.Sprintf("%s%s", gen_md5_str(data), ext)
 
 	ctx.storage.save_file(md5key, data)
 	if err != nil {
 		//fmt.Println("upload file fail:" md5key)
+		fmt.Println(err)
 		return
 	}
 	w.Write([]byte(fmt.Sprintf("%s", md5key)))
