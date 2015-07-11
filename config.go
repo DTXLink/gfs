@@ -2,7 +2,7 @@ package gfs
 
 import (
 	_ "errors"
-	"github.com/DTXLink/gcfg"
+	"github.com/dtxlink/gcfg"
 	_ "strings"
 )
 
