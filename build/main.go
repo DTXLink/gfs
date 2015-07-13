@@ -6,7 +6,7 @@ import (
 	"os"
 	"runtime"
 	//log "github.com/golang/glog"
-	gfs "github.com/DTXLink/gfs"
+	gfs "github.com/dtxlink/gfs"
 )
 
 func main() {
