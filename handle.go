@@ -1,4 +1,4 @@
-package gfs
+package main
 
 import (
 	"fmt"
@@ -19,7 +19,9 @@ func (ctx *Context) server(w http.ResponseWriter, r *http.Request) {
 		md5key := path[1:len(path)]
 		fmt.Println("md5key:" + md5key)
 
-		val, err := ctx.storage.get(md5key)
+		ctx.store.Get("key")
+
+		val, err := ctx.store.Get(md5key)
 		if err != nil {
 			fmt.Fprint(w, "the file not exits!")
 		}
@@ -43,7 +45,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	    <body>
 	        <form action="/upload" method="POST" enctype="multipart/form-data">
 	            <label for="field1">file:</label>
-	            <input name="upload_file" type="file" />
+	            <input name="file" type="file" />
 	            <input type="submit"></input>
 	        </form>
 	    </body>
@@ -59,7 +61,7 @@ func (ctx *Context) upload(w http.ResponseWriter, r *http.Request) {
 	//		return
 	//	}
 
-	file, handle, err := r.FormFile("upload_file")
+	file, handle, err := r.FormFile("file")
 	if err != nil {
 		//ctx.doError(err, 500)
 		fmt.Println(err)
@@ -80,7 +82,7 @@ func (ctx *Context) upload(w http.ResponseWriter, r *http.Request) {
 
 	md5key := fmt.Sprintf("%s%s", gen_md5_str(data), ext)
 
-	ctx.storage.set(md5key, data)
+	ctx.store.Set(md5key, data)
 	if err != nil {
 		//fmt.Println("upload file fail:" md5key)
 		fmt.Println(err)
@@ -90,7 +92,7 @@ func (ctx *Context) upload(w http.ResponseWriter, r *http.Request) {
 }
 
 func (ctx *Context) download(w http.ResponseWriter, r *http.Request, key string) {
-	val, err := ctx.storage.get(key)
+	val, err := ctx.store.Get(key)
 	if err != nil {
 		fmt.Fprint(w, "the file not exits!")
 	}

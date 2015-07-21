@@ -1,4 +1,4 @@
-package gfs
+package main
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 )
 
 type Context struct {
-	config  *Config
-	storage *SSDBStorage
+	config *Config
+	store  *RedisDB
 }
 
 func NewContext(cfgFile string) (*Context, error) {
@@ -15,9 +15,19 @@ func NewContext(cfgFile string) (*Context, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	redisdb, err := NewRedisDB(cfg.Storage.SSDBHost, cfg.Storage.SSDBPort)
+	if err != nil {
+		return nil, err
+	}
+
+	redisdb.Set("key1", []byte("abcd"))
+	val, err := redisdb.Get("key1")
+	fmt.Println("key1:", val)
+
 	return &Context{
-		config:  &cfg,
-		storage: NewSSDBStorage(&cfg),
+		config: &cfg,
+		store:  redisdb,
 	}, nil
 }
 
