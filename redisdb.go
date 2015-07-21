@@ -63,6 +63,12 @@ func (this *RedisDB) Get(key string) ([]byte, error) {
 	}
 	defer conn.Close()
 
+	ff, err := conn.Do("GET", key)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("get:", ff)
+
 	data, err := redis.Bytes(conn.Do("GET", key))
 	if err != nil {
 		return nil, err

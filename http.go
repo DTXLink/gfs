@@ -21,10 +21,6 @@ func NewContext(cfgFile string) (*Context, error) {
 		return nil, err
 	}
 
-	redisdb.Set("key1", []byte("abcd"))
-	val, err := redisdb.Get("key1")
-	fmt.Println("key1:", val)
-
 	return &Context{
 		config: &cfg,
 		store:  redisdb,
