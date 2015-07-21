@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"os"
 	"runtime"
-	//log "github.com/golang/glog"
-	gfs "github.com/DTXLink/gfs"
 )
 
 func main() {
@@ -27,7 +25,7 @@ func main() {
 		os.Exit(-1)
 	}
 
-	context, err := gfs.NewContext(cfgFile)
+	context, err := NewContext(cfgFile)
 
 	if err != nil {
 		panic(err)
@@ -36,7 +34,7 @@ func main() {
 
 	fmt.Println("web start..")
 
-	gfs.StartHTTP(context)
+	StartHTTP(context)
 }
 
 // exists returns whether the given file or directory exists or not
