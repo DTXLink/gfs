@@ -8,8 +8,8 @@ import (
 )
 
 type RedisDB struct {
-	pool      *redis.Pool
 	isConnect bool
+	pool      *redis.Pool
 }
 
 func NewRedisDB(s string, p int) (*RedisDB, error) {
@@ -62,12 +62,6 @@ func (this *RedisDB) Get(key string) ([]byte, error) {
 		return nil, errors.New("Can not connect db!")
 	}
 	defer conn.Close()
-
-	ff, err := conn.Do("GET", key)
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println("get:", ff)
 
 	data, err := redis.Bytes(conn.Do("GET", key))
 	if err != nil {

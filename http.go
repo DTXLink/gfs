@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -16,7 +17,7 @@ func NewContext(cfgFile string) (*Context, error) {
 		return nil, err
 	}
 
-	redisdb, err := NewRedisDB(cfg.Storage.SSDBHost, cfg.Storage.SSDBPort)
+	redisdb, err := NewRedisDB(cfg.Store.SSDBHost, cfg.Store.SSDBPort)
 	if err != nil {
 		return nil, err
 	}
@@ -27,11 +28,28 @@ func NewContext(cfgFile string) (*Context, error) {
 	}, nil
 }
 
-func StartHTTP(ctx *Context) {
+func StartHTTP(c *Context) {
+	//http.HandleFunc("/", c.server)
+	//http.HandleFunc("/upload", c.upload)
 
-	http.HandleFunc("/", ctx.server)
-	http.HandleFunc("/upload", ctx.upload)
+	// internal
+	httpServeMux := http.NewServeMux()
+	httpServeMux.HandleFunc("/", c.server)
+	httpServeMux.HandleFunc("/upload", c.upload)
 
-	addr := fmt.Sprintf("%s:%d", ctx.config.System.Host, ctx.config.System.Port)
-	http.ListenAndServe(addr, nil)
+	//http listen
+	bind := fmt.Sprintf("%s:%d", c.config.System.Host, c.config.System.Port)
+	//http.ListenAndServe(addr, nil)
+	fmt.Printf("http listen addr:\"%s\"", bind)
+	go httpListen(httpServeMux, bind)
+}
+
+func httpListen(mux *http.ServeMux, bind string) {
+	server := &http.Server{Handler: mux, Addr: bind}
+	server.SetKeepAlivesEnabled(false)
+
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatalf("server error(%v)", err)
+		panic(err)
+	}
 }

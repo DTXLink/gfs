@@ -12,7 +12,7 @@ type Config struct {
 		Port int
 	}
 
-	Storage struct {
+	Store struct {
 		SSDBHost string
 		SSDBPort int
 	}

@@ -32,9 +32,11 @@ func main() {
 		os.Exit(-2)
 	}
 
-	fmt.Println("web start..")
+	fmt.Println("gfs start..")
 
 	StartHTTP(context)
+
+	HandleSignal(InitSignal())
 }
 
 // exists returns whether the given file or directory exists or not
