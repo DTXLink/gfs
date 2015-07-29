@@ -1,13 +1,16 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"path"
+	"strings"
 )
 
-func (ctx *Context) server(w http.ResponseWriter, r *http.Request) {
+func (c *Context) server(w http.ResponseWriter, r *http.Request) {
 	//params := r.URL.Query()
 	//key := params.Get("k")
 	//callback := params.Get("cb")
@@ -16,18 +19,9 @@ func (ctx *Context) server(w http.ResponseWriter, r *http.Request) {
 	if path == "/" {
 		home(w, r)
 	} else {
-		md5key := path[1:len(path)]
-		fmt.Println("md5key:" + md5key)
-
-		ctx.store.Get("key")
-
-		val, err := ctx.store.Get(md5key)
-		if err != nil {
-			fmt.Fprint(w, "the file not exits!")
-		}
-
-		fmt.Fprint(w, val)
-		ctx.download(w, r, md5key)
+		key := path[1:len(path)]
+		//fmt.Println("key:" + key)
+		c.download(w, r, key)
 	}
 }
 
@@ -54,7 +48,7 @@ func home(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, html)
 }
 
-func (ctx *Context) upload(w http.ResponseWriter, r *http.Request) {
+func (c *Context) upload(w http.ResponseWriter, r *http.Request) {
 	//	if err := r.ParseMultipartForm(CACHE_MAX_SIZE); err != nil {
 	//		//ctx.context.Logger.Error(err.Error())
 	//		//ctx.doError(err, http.StatusForbidden)
@@ -80,21 +74,39 @@ func (ctx *Context) upload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	md5key := fmt.Sprintf("%s%s", gen_md5_str(data), ext)
+	key := fmt.Sprintf("%s%s", gen_md5_str(data), ext)
 
-	ctx.store.Set(md5key, data)
+	c.store.Set(key, data)
 	if err != nil {
-		//fmt.Println("upload file fail:" md5key)
+		//fmt.Println("upload file fail:" key)
 		fmt.Println(err)
 		return
 	}
-	w.Write([]byte(fmt.Sprintf("%s", md5key)))
+	w.Write([]byte(fmt.Sprintf("%s", key)))
 }
 
-func (ctx *Context) download(w http.ResponseWriter, r *http.Request, key string) {
-	val, err := ctx.store.Get(key)
+func (c *Context) download(w http.ResponseWriter, r *http.Request, key string) {
+	data, err := c.store.Get(key)
 	if err != nil {
 		fmt.Fprint(w, "the file not exits!")
 	}
-	fmt.Fprint(w, val)
+
+	path := key
+	request_type := path[strings.LastIndex(path, "."):]
+
+	//fmt.Println(request_type)
+	switch request_type {
+	case ".css":
+		w.Header().Set("Content-Type", "text/css")
+	case ".js":
+		w.Header().Set("Content-Type", "text/javascript")
+	case ".jpg":
+		w.Header().Set("Content-Type", "image/jpeg")
+	}
+
+	//fmt.Fprint(w, data)
+	//w.Header().Set("Accept-Ranges", "bytes")
+	//w.Header().Set("Content-Length", len(data))
+	//w.Write(data)
+	io.Copy(w, bytes.NewReader(data))
 }

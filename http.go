@@ -40,7 +40,7 @@ func StartHTTP(c *Context) {
 	//http listen
 	bind := fmt.Sprintf("%s:%d", c.config.System.Host, c.config.System.Port)
 	//http.ListenAndServe(addr, nil)
-	fmt.Printf("http listen addr:\"%s\"", bind)
+	fmt.Printf("http listen addr:\"%s\"\n", bind)
 	go httpListen(httpServeMux, bind)
 }
 
