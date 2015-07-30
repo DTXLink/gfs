@@ -45,7 +45,7 @@ func (this *RedisDB) getConnect() (redis.Conn, error) {
 	}
 }
 
-func (this *RedisDB) Exist(key string) bool {
+func (this *RedisDB) exist(key string) bool {
 	conn, err := this.getConnect()
 	if err != nil {
 		return false
@@ -56,7 +56,7 @@ func (this *RedisDB) Exist(key string) bool {
 	return isExists
 }
 
-func (this *RedisDB) Get(key string) ([]byte, error) {
+func (this *RedisDB) get(key string) ([]byte, error) {
 	conn, err := this.getConnect()
 	if err != nil {
 		return nil, errors.New("Can not connect db!")
@@ -70,9 +70,9 @@ func (this *RedisDB) Get(key string) ([]byte, error) {
 	return data, nil
 }
 
-func (this *RedisDB) Set(key string, val []byte) error {
-	this.Do("set", key, val)
-	return nil
+func (this *RedisDB) set(key string, val []byte) error {
+	_, err := this.Do("set", key, val)
+	return err
 }
 
 func (this *RedisDB) Do(commandName string, args ...interface{}) (interface{}, error) {
@@ -84,7 +84,7 @@ func (this *RedisDB) Do(commandName string, args ...interface{}) (interface{}, e
 	return conn.Do(commandName, args...)
 }
 
-func (this *RedisDB) Send(commandName string, args ...interface{}) error {
+func (this *RedisDB) send(commandName string, args ...interface{}) error {
 	conn, err := this.getConnect()
 	if err != nil {
 		return errors.New("Can not connect db!")
@@ -93,7 +93,7 @@ func (this *RedisDB) Send(commandName string, args ...interface{}) error {
 	return conn.Send(commandName, args...)
 }
 
-func (this *RedisDB) Flush() {
+func (this *RedisDB) flush() {
 	if this.isConnect {
 		conn := this.pool.Get()
 		defer conn.Close()
@@ -105,4 +105,34 @@ func (this *RedisDB) Close() {
 	if this.isConnect {
 		this.pool.Close()
 	}
+}
+
+/*
+Hashmap
+*/
+//		fmt.Println("helllo ssdb set")
+//		c.store.hset("lin", "name", []byte("linfx"))
+//		name, err := c.store.hget("lin", "name")
+//		if err != nil {
+//			fmt.Println(err)
+//		}
+//		fmt.Println(string(name))
+
+func (this *RedisDB) hset(name string, key string, val []byte) error {
+	_, err := this.Do("hset", name, key, val)
+	return err
+}
+
+func (this *RedisDB) hget(name string, key string) ([]byte, error) {
+	conn, err := this.getConnect()
+	if err != nil {
+		return nil, errors.New("Can not connect db!")
+	}
+	defer conn.Close()
+
+	data, err := redis.Bytes(conn.Do("hget", name, key))
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
