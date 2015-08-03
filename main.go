@@ -33,9 +33,7 @@ func main() {
 	}
 
 	fmt.Println("gfs start..")
-
 	StartHTTP(context)
-
 	HandleSignal(InitSignal())
 }
 

@@ -46,7 +46,8 @@ func home(w http.ResponseWriter, r *http.Request) {
 	</html>`
 
 	w.Header().Set("content-type", "text/html; charset=utf-8")
-	w.Write([]byte(html))
+	//w.Write([]byte(html))
+	io.WriteString(w, html)
 }
 
 func (c *Context) upload(w http.ResponseWriter, r *http.Request) {

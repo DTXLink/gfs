@@ -85,7 +85,7 @@ func gen_key(md5 string, args ...interface{}) string {
 }
 
 func gen_md5_str(data []byte) string {
-	fmt.Println("Begin to Caculate MD5...")
+	//fmt.Println("Begin to Caculate MD5...")
 	m := md5.New()
 	m.Write(data)
 	return hex.EncodeToString(m.Sum(nil))
