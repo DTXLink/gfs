@@ -15,7 +15,6 @@ func main() {
 	flag.Parse()
 
 
-
 	if *configPtr == "" {
 		*configPtr = "./conf/config.conf"
 	}
