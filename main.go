@@ -14,6 +14,8 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
+
+
 	if *configPtr == "" {
 		*configPtr = "./conf/config.conf"
 	}
